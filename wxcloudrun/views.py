@@ -5,6 +5,10 @@ from wxcloudrun.dao import delete_counterbyid, query_counterbyid, insert_counter
 from wxcloudrun.model import Counters
 from wxcloudrun.response import make_succ_empty_response, make_succ_response, make_err_response
 
+# 排行榜类型常量
+LEADERBOARD_TYPE_FRIEND = 'friend'
+LEADERBOARD_TYPE_NATIONAL = 'national'
+
 
 @app.route('/')
 def index():
@@ -64,3 +68,32 @@ def get_count():
     """
     counter = Counters.query.filter(Counters.id == 1).first()
     return make_succ_response(0) if counter is None else make_succ_response(counter.count)
+
+
+@app.route('/api/leaderboard', methods=['POST'])
+def leaderboard():
+    """
+    :return: 排行榜列表
+    """
+    # 获取请求体参数
+    params = request.get_json()
+
+    # 检查type参数
+    if 'type' not in params:
+        return make_err_response('缺少type参数')
+
+    leaderboard_type = params['type']
+
+    if leaderboard_type not in [LEADERBOARD_TYPE_FRIEND, LEADERBOARD_TYPE_NATIONAL]:
+        return make_err_response('type参数错误')
+
+    # mock数据
+    mock_data = [
+        {'avatar': 'https://example.com/avatar1.png', 'score': 100},
+        {'avatar': 'https://example.com/avatar2.png', 'score': 95},
+        {'avatar': 'https://example.com/avatar3.png', 'score': 90},
+        {'avatar': 'https://example.com/avatar4.png', 'score': 85},
+        {'avatar': 'https://example.com/avatar5.png', 'score': 80}
+    ]
+
+    return make_succ_response(mock_data)
