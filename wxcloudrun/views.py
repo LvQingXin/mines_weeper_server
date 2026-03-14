@@ -78,13 +78,12 @@ def leaderboard():
     :return: 排行榜列表
     """
     # 获取请求体参数
-    params = request.get_json()
+    params = request.get_json(silent=True) or {}
 
     # 检查type参数
-    if 'type' not in params:
+    leaderboard_type = params.get('type') or request.args.get('type')
+    if not leaderboard_type:
         return make_err_response('缺少type参数')
-
-    leaderboard_type = params['type']
 
     if leaderboard_type not in [LEADERBOARD_TYPE_FRIEND, LEADERBOARD_TYPE_NATIONAL]:
         logger.warning('leaderboard invalid type: %s', leaderboard_type)
