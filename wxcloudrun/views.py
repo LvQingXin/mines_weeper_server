@@ -5,6 +5,8 @@ from wxcloudrun.dao import delete_counterbyid, query_counterbyid, insert_counter
 from wxcloudrun.model import Counters
 from wxcloudrun.response import make_succ_empty_response, make_succ_response, make_err_response
 
+logger = app.logger
+
 # 排行榜类型常量
 LEADERBOARD_TYPE_FRIEND = 'friend'
 LEADERBOARD_TYPE_NATIONAL = 'national'
@@ -85,6 +87,7 @@ def leaderboard():
     leaderboard_type = params['type']
 
     if leaderboard_type not in [LEADERBOARD_TYPE_FRIEND, LEADERBOARD_TYPE_NATIONAL]:
+        logger.warning('leaderboard invalid type: %s', leaderboard_type)
         return make_err_response('type参数错误')
 
     # mock数据
@@ -96,4 +99,5 @@ def leaderboard():
         {'avatar': 'https://example.com/avatar5.png', 'score': 80}
     ]
 
+    logger.info('leaderboard type: %s, size: %s', leaderboard_type, len(mock_data))
     return make_succ_response(mock_data)
