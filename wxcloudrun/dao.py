@@ -3,7 +3,7 @@ import logging
 from sqlalchemy.exc import OperationalError
 
 from wxcloudrun import db
-from wxcloudrun.model import Counters
+from wxcloudrun.model import Counters, ClearTimeRecords
 
 # 初始化日志
 logger = logging.getLogger('log')
@@ -62,3 +62,26 @@ def update_counterbyid(counter):
         db.session.commit()
     except OperationalError as e:
         logger.info("update_counterbyid errorMsg= {} ".format(e))
+
+
+def insert_clear_time_record(record):
+    """
+    插入一个ClearTimeRecords实体
+    :param record: ClearTimeRecords实体
+    """
+    try:
+        db.session.add(record)
+        db.session.commit()
+    except OperationalError as e:
+        logger.info("insert_clear_time_record errorMsg= {} ".format(e))
+
+
+def query_min_clear_time(open_id, game_type):
+    try:
+        return db.session.query(db.func.min(ClearTimeRecords.clear_time)).filter(
+            ClearTimeRecords.open_id == open_id,
+            ClearTimeRecords.game_type == game_type,
+        ).scalar()
+    except OperationalError as e:
+        logger.info("query_min_clear_time errorMsg= {} ".format(e))
+        return None
